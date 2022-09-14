@@ -1,4 +1,7 @@
 from bs4 import BeautifulSoup;
+import urllib.request, urllib.error, urllib.parse
+
+url = "https://resultats.ffbb.com/comites.html"
 
 
 
