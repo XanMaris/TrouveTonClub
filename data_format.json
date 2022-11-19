@@ -1,0 +1,28 @@
+{
+    "id" : 0,
+    "nomClub" : "",
+
+    "position" : {
+        "adresse" : "",
+        "region" : "",
+        "departement" : "",
+        "ville" : "",
+        "latitude" : 0,
+        "longitude" : 0
+    },
+
+    "genre" : "",
+    "dateCreation" : "01/01/1970",
+    "siteWeb" : "https://...",
+    "photoUrl" : "https://...",
+
+    "grandsJoueurs" : [],
+
+    "PalmaresList" : [
+        {
+            "id" : 0,
+            "nom" : "",
+            "date" : "01/01/1970" 
+        }
+    ]
+}

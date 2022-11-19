@@ -1,18 +1,22 @@
-<script setup lang="ts">
+<script lang="ts">
 import Nav from "./components/base/Nav.vue";
 
+export default {
+  components: {
+    Nav
+  }
+}
 </script>
 
 <template>
   <div>
   <Nav></Nav>
-  <router-link to="/home">Home</router-link>
-  <router-view></router-view>
 
+  <main class="d-flex justify-content-center">
+    <router-view></router-view>
 
-
-  <main>
     
+
   </main>
 </div>
 </template>
