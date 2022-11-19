@@ -4,7 +4,9 @@
     <Map :latitude = 45.764043 :longtitude= 4.835659>
     </Map>
   </div>
-  <PopUpClub v-if="displayPopUp" @switchDisplay="displayPopUp=!displayPopUp" />
+  <!-- bouton temporaire -->
+  <button @click='displayPopUp=true'>POP UP (bouton temporaire)</button>
+  <PopUpClub v-if="displayPopUp" @switchDisplay="displayPopUp = !displayPopUp" :club="{nom:'test2', localisation:'Lyon', lien:'www.google.com'}"/>
 </template>
 
 <script lang="ts">
