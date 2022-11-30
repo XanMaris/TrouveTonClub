@@ -1,28 +1,35 @@
 var page = require('webpage').create();
 var url = 'https://resultats.ffbb.com/comites.html';
 var tableau_Region = [];
-var liste = [];
-tabLien = [];
+tab = [];
+listeComite = [];
+listeLien = [];
 page.open(url, function() {
 
-    liste = page.evaluate(function() {
-        var maListe = []
-        maListe = document.getElementsByClassName('gauche');
+    tab = page.evaluate(function() {
 
-        return maListe;
-    })
+        table = document.getElementsByClassName('liste')[0];
+        var maliste = [];
+        var tablien = [];
+        var u = 0;
 
-    for (i = 0; i < liste.length; i++) {
-        console.log(liste[i]);
-    }
+        for (var i = 1, row; row = table.rows[i]; i++) {
+            //rows would be accessed using the "row" variable assigned in the for loop
+
+            maliste[u] = table.rows[i].cells[1].innerText;
+            if (table.rows[i].cells[1].getElementsByTagName("a")[0].href == undefined) {
+                tablien[u] = "";
+            } else {
+                tablien[u] = table.rows[i].cells[1].getElementsByTagName("a")[0].href;
+            }
+            u++;
+        }
+        return { 'liste': maliste, 'lien': tablien }
+    });
+    listeComite = tab.liste
+    listeLien = tab.lien
+
+
+    console.log(listeComite);
     phantom.exit();
-
 });
-
-
-
-// for (i = 1; i < liste.length; i + 2) {
-//     tabComite = liste[i].innerText;
-//     tabLien = liste[i].InnerHTML;
-//     console.log(tabLien);
-// }
