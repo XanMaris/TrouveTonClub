@@ -20,7 +20,7 @@ export default {
   },
   data() {
     return {
-      displayPopUp: true,
+      displayPopUp: false,
       clubs : ['first', 'second', 'third', 'fourth', 'five', 'six', 'seven', 'eight'],
       club_id : 0
     }

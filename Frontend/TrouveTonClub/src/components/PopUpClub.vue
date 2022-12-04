@@ -35,11 +35,21 @@ export default {
     padding-top: 2.5%;
     color: black;
     font-size: 150%;
+    font-family: Calibri;
+    font-weight: bold;
 }
 
 #close {
     position: absolute;
     right: 1.5%;
-    top: 2.5%
+    top: 2.5%;
+    width:30px;
+    height:30px;
+    font-weight: bolder;
+    text-align: center;
+    border-radius: 100%;
+    color: white;
+    border: none;
+    background-color: red;
 }
 </style>
