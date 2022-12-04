@@ -1,5 +1,5 @@
 <template>
-  <div id="map"></div>
+  <div id="map" ></div>
 </template>
 
 <script lang="ts">
@@ -10,11 +10,15 @@ export default {
   
   props: {
     latitude: Number,
-    longtitude: Number
+    longtitude: Number,
+  
+    },
+    data(){
+      return {}
     },
 
-  setup(props : any){
-    console.log(props);
+  setup(props : any, context : any){
+
     onMounted(() => {
       let map = leaflet.map("map").setView([props.latitude, props.longtitude], 13);
       leaflet
@@ -24,8 +28,15 @@ export default {
             '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         })
         .addTo(map);
+        leaflet.marker([props.latitude, props.longtitude]).addTo(map).on('click', ()=>{
+          context.emit("club_id", 4);
+          context.emit("displayPopUp", true);
+        });
+        leaflet.marker([props.latitude + 0.01, props.longtitude+ 0.01]).addTo(map);
     });
   },
+
+  methods:{}
 }
 </script>
 

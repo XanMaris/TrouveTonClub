@@ -2,18 +2,7 @@
     <div id="main-wrapper">
         <button id="close" @click="$emit('switchDisplay')">X</button>
         <div id="information-wrapper">
-            <p>
-                nom : {{ club.nom }}
-            </p>
-            <p>
-                localisation : {{club.localisation  }}
-            </p>
-            <p>
-                lien : <a :href="club.lien">{{ club.lien }}</a>
-            </p>
-            <p>
-                ...
-            </p>
+           {{club}}
         </div>
     </div>
 </template>
