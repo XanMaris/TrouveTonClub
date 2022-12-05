@@ -24,7 +24,7 @@
     <div class="mb-3">
       <label for="adresse" class="form-label" >Adresse</label>
       <br>
-      <input type="text" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" :class="{redInput:adresseIsEmpty}"/>
+      <input type="text" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" @focus="(adresseIsEmpty=false)" :class="{redInput:adresseIsEmpty}"/>
     </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
@@ -65,7 +65,6 @@ export default defineComponent({
   methods: {
     getClubs() {
       if(this.adresse === null || this.adresse.trim() === ""){
-        console.log("vide")
         this.adresseIsEmpty=true;
         this.adressePlaceHolder="Adress must contain a value "
       }else{
