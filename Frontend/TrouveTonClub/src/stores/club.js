@@ -14,5 +14,10 @@ export const useClubStore = defineStore('counter', {
     getClub(id) {
       return this.clubs[id];
     },
+    getClubByLocation(location) {
+      console.log(location)
+      // call API
+      // fill the clubs json
+    }
   },
 })

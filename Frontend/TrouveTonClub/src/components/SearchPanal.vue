@@ -18,13 +18,13 @@
         <option value="4">U16-U17 (Cadets)</option>
         <option value="5">U18-U19-U20 (Junior)</option>
         <option value="5">Seniors</option>
-        
+
       </select>
     </div>
     <div class="mb-3">
-      <label for="adresse" class="form-label">Adresse</label>
+      <label for="adresse" class="form-label" >Adresse</label>
       <br>
-      <input type="text" class="form-control" placeholder="451 Cr Emile Zola"/>
+      <input type="text" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" :class="{redInput:adresseIsEmpty}"/>
     </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
@@ -39,16 +39,47 @@
       <input type="checkbox" class="form-check-input" id="exampleCheck1">
       <label class="form-check-label" for="exampleCheck1">Check me out</label>
     </div>
-    <button type="submit" class="btn btn-primary">Trouve les clubs!</button>
+    <button type="button" @click="getClubs()" class="btn btn-primary">Trouve les clubs!</button>
   </form>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
+import { useClubStore } from '@/stores/club';
 
 export default defineComponent({
+  data() {
+    return {
+      club: useClubStore(),
+      adresse: "",
+      adresseIsEmpty: false,
+      adressePlaceHolder: "451 Cr Emile Zola"
+    }
+  },
   setup() {
 
+    // onMounted(()=>{
+
+    // })
   },
+  methods: {
+    getClubs() {
+      if(this.adresse === null || this.adresse.trim() === ""){
+        console.log("vide")
+        this.adresseIsEmpty=true;
+        this.adressePlaceHolder="Adress must contain a value "
+      }else{
+        this.club.getClubByLocation(this.adresse);
+      }
+    }
+  }
 })
 </script>
+<style>
+.redInput {
+  border-color:red;
+}
+.redInput::placeholder{
+  color: red;
+}
+</style>
