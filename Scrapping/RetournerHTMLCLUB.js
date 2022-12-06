@@ -1,13 +1,11 @@
 var listeComite = [];
 var listeLien = [];
-var tabClub = [];
-function PremierProg() {
+
+ function PremierProg() {
     var page = require('webpage').create();
     var url = 'https://resultats.ffbb.com/comites.html';
     var tableau_Region = [];
     tab = [];
-
-
     page.open(url, function () {
 
         tab = page.evaluate(function () {
@@ -39,40 +37,52 @@ function PremierProg() {
 }
 
 
-function deuxiemeProg(url) {
-    var page2 = require('webpage').create();
-    tab = [];
+ function deuxiemeProg(url) {
+    var tabClub = [];
+    var page = require('webpage').create();
 
-    page2.open(url, function () {
+    page.open(url, function () {
 
-        tabClub = page2.evaluate(function () {
+        tabClub = page.evaluate(function () {
 
             table = document.getElementById("idIframeOrganismeFils").contentDocument.getElementsByClassName('liste')[0];
-            var maliste = [];
-            var tablien = [];
+            var maliste2 = [];
+            var tablien2 = [];
             var u = 0;
 
             for (var i = 1, row; row = table.rows[i]; i++) {
                 //rows would be accessed using the "row" variable assigned in the for loop
-
-                maliste[u] = table.rows[i].cells[1].innerText;
-                if (table.rows[i].cells[1].getElementsByTagName("a")[0].href == undefined) {
-                    tablien[u] = "";
+                if(table.rows[i].cells[2] === undefined)
+                {
+                    maliste2[u] ="";
+                }
+                else
+                {
+                    maliste2[u] = table.rows[i].cells[2].innerText;
+                }
+                if (table.rows[i].cells[2].getElementsByTagName("a")[0].href == undefined) {
+                    tablien2[u] = "";
                 } else {
-                    tablien[u] = table.rows[i].cells[1].getElementsByTagName("a")[0].href;
+                    tablien2[u] = table.rows[i].cells[1].getElementsByTagName("a")[0].href;
                 }
                 u++;
             }
-            return { 'liste': maliste, 'lien': tablien }
+            return { 'liste': maliste2, 'lien': tablien2 }
 
         });
-        console.log(tabClub.maliste);
+        console.log(tabClub.lien);
         phantom.exit();
     });
 }
 
 PremierProg();
-for (i=0;i<listeLien.length;i++)
-{
-    deuxiemeProg(listeLien);
-}
+// while(!verrou)
+// {}
+// for (i=0;i<listeLien.length;i++)
+// {
+    //  deuxiemeProg("https://resultats.ffbb.com/organisation/7eb.html");
+// }
+
+
+
+
