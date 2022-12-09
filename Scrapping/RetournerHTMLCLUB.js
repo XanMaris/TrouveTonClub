@@ -1,10 +1,10 @@
 var listeComite = [];
-var listeLien = [];
+
 
  function PremierProg() {
     var page = require('webpage').create();
     var url = 'https://resultats.ffbb.com/comites.html';
-    var tableau_Region = [];
+    var listeLien = [];
     tab = [];
     page.open(url, function () {
 
@@ -22,7 +22,7 @@ var listeLien = [];
                 if (table.rows[i].cells[1].getElementsByTagName("a")[0].href == undefined) {
                     tablien[u] = "";
                 } else {
-                    tablien[u] = table.rows[i].cells[1].getElementsByTagName("a")[0].href;
+                    tablien[u] = table.rows[i].cells[1].getElementsByTagName("a")[0].href.toString();
                 }
                 u++;
             }
@@ -34,6 +34,7 @@ var listeLien = [];
         console.log(listeLien);
         phantom.exit();
     });
+    return listeLien;
 }
 
 
@@ -42,7 +43,6 @@ var listeLien = [];
     var page = require('webpage').create();
 
     page.open(url, function () {
-
         tabClub = page.evaluate(function () {
 
             table = document.getElementById("idIframeOrganismeFils").contentDocument.getElementsByClassName('liste')[0];
@@ -75,12 +75,13 @@ var listeLien = [];
     });
 }
 
-PremierProg();
+var listeLien = ["https://resultats.ffbb.com/organisation/7eb.html","https://resultats.ffbb.com/organisation/802.html"];
 // while(!verrou)
 // {}
+
 // for (i=0;i<listeLien.length;i++)
 // {
-    //  deuxiemeProg("https://resultats.ffbb.com/organisation/7eb.html");
+     deuxiemeProg("https://resultats.ffbb.com/organisation/7eb.html");
 // }
 
 
