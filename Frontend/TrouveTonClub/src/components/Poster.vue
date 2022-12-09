@@ -17,6 +17,6 @@ export default defineComponent({});
     height: calc(100vh - 56px);
     background-image : url('@/images/ezgif.com-gif-maker(2).gif');
     background-size: cover;
-   
+    
 }
 </style>

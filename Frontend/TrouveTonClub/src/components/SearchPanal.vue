@@ -26,7 +26,7 @@
       <br>
       <input type="text" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" @focus="(adresseIsEmpty=false)" :class="{redInput:adresseIsEmpty}"/>
     </div>
-    <div class="mb-3">
+    <!-- <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
       <label for="exampleInputEmail1" class="form-label">Categorie</label>
       <select class="form-select" aria-label="Disabled select example">
@@ -34,10 +34,13 @@
         <option value="2">2</option>
         <option value="3">...</option>
       </select>
-    </div>
+    </div> -->
+    <label for="distance">Distance : {{distance}} km</label>
+    <br>
+    <input type="range" id="distance" min="0" max="100" v-model="distance"> 
     <div class="mb-3 form-check">
       <input type="checkbox" class="form-check-input" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      <label class="form-check-label" for="exampleCheck1">...</label>
     </div>
     <button type="button" @click="getClubs()" class="btn btn-primary">Trouve les clubs!</button>
   </form>
@@ -53,7 +56,8 @@ export default defineComponent({
       club: useClubStore(),
       adresse: "",
       adresseIsEmpty: false,
-      adressePlaceHolder: "451 Cr Emile Zola"
+      adressePlaceHolder: "451 Cr Emile Zola",
+      distance: 0
     }
   },
   setup() {
@@ -66,7 +70,7 @@ export default defineComponent({
     getClubs() {
       if(this.adresse === null || this.adresse.trim() === ""){
         this.adresseIsEmpty=true;
-        this.adressePlaceHolder="Adress must contain a value "
+        this.adressePlaceHolder="Adresse doit contenir une valeur"
       }else{
         this.club.getClubByLocation(this.adresse);
       }
