@@ -42,7 +42,7 @@ var listeComite = [];
     var tabClub = [];
     var page = require('webpage').create();
 
-    page.open(url, function () {
+    page.open(url, function (status) {
         tabClub = page.evaluate(function () {
 
             table = document.getElementById("idIframeOrganismeFils").contentDocument.getElementsByClassName('liste')[0];
@@ -71,8 +71,12 @@ var listeComite = [];
 
         });
         console.log(tabClub.lien);
+        page.close();
         phantom.exit();
+
     });
+
+   
 }
 
 var listeLien = ["https://resultats.ffbb.com/organisation/7eb.html","https://resultats.ffbb.com/organisation/802.html"];
@@ -81,7 +85,10 @@ var listeLien = ["https://resultats.ffbb.com/organisation/7eb.html","https://res
 
 // for (i=0;i<listeLien.length;i++)
 // {
-     deuxiemeProg("https://resultats.ffbb.com/organisation/7eb.html");
+    deuxiemeProg("https://resultats.ffbb.com/organisation/7eb.html");
+
+    deuxiemeProg("https://resultats.ffbb.com/organisation/802.html");
+
 // }
 
 
