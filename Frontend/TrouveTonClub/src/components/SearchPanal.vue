@@ -24,7 +24,7 @@
     <div class="mb-3">
       <label for="adresse" class="form-label" >Adresse</label>
       <br>
-      <input type="text" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" @focus="(adresseIsEmpty=false)" :class="{redInput:adresseIsEmpty}"/>
+      <input type="text" id="autocomplete" class="form-control" :placeholder="adressePlaceHolder" v-model="adresse" @focus="(adresseIsEmpty=false)" :class="{redInput:adresseIsEmpty}"/>
     </div>
     <!-- <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
@@ -45,6 +45,23 @@
     <button type="button" @click="getClubs()" class="btn btn-primary">Trouve les clubs!</button>
   </form>
 </template>
+
+<script>
+  let autocomplete;
+  function initAutocomplete() {
+    autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById('autocomplete'),
+      {
+        types: ['establishement'],
+        fields: ['place_id', 'geometry', 'name']
+      }
+    );
+  }
+</script>
+
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpVaculz0p4CmUOhZCE-gALMxjXwdWSC0&libraries=places&callback=initAutocomplete">
+</script>
 
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
