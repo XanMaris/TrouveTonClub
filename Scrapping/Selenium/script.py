@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from time import sleep
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import json
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -15,9 +16,6 @@ driver.set_page_load_timeout(600)
 
 
 def getComiteLinks():
-    # TODO : 
-    # BUGS : 
-    #   * retourne trois element pour chaque comite 
     global driver
 
     linksComite = {}
@@ -28,31 +26,59 @@ def getComiteLinks():
     for element in l:
         link = element.get_attribute("href")
         text = element.text
-        if(link is not None):
+        if(link is not None and link not in linksComite.values()):
             linksComite[text]=link
+            print("add comite : " + text)
 
     return linksComite
 
 linksComite = getComiteLinks()
-# linksComite = {"COMITE DE L'AIN DE BASKET-BALL" :"https://resultats.ffbb.com/organisation/7eb.html"}
+# print(linksComite)
+# linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
 def getLinksClubs(linksComite):
     global driver
     linksClubs = {}
-    for key, value in linksComite.items():
+    for value in linksComite.values():
         driver.get(value)
-        # sleep(2)
-        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeOrganismeFils")))
-        l = driver.find_elements(By.CLASS_NAME,'tableau')
-        print(l)
-        for element in l:
-            link = element.get_attribute("href")
-            text = element.text
-            if(link is not None):
-                linksClubs[text]=link
-            print(element.text)
-            print(element)
+        try:
+            WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeOrganismeFils")))
+            l = driver.find_elements(By.CLASS_NAME,'tableau')
+            for element in l:
+                link = element.get_attribute("href")
+                text = element.text
+                if(link is not None and link not in linksClubs.values()):
+                    linksClubs[text]=link
+                    print("add club : " + text)
+        except:
+            print("can't find links for comite : " + value)
     return linksClubs
-print(getLinksClubs(linksComite))
+linksClubs = getLinksClubs(linksComite)
+#linksClub={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
+def getClubsInfo(linksClubs):
+    global driver
+    clubs = []
+    for value in linksClubs.values():
+        try:
+            club={}
+            driver.get(value)
+            organisme  = driver.find_element(By.ID,'idTdOrganisme')
+            # for element in organisme.text.split():
+            #     if(element)
+            # while()
+            organismeParse = organisme.text.split("\n")
+            club["nom"]=organismeParse[0]
+            club["adresse"]=organismeParse[1]
+            club["ville"]=organismeParse[2]
+            club["telephone"]=organismeParse[3]
+            club["email"]=organismeParse[4]
+            club["site"]=organismeParse[5]
+            clubs.append(club)
+            print("add info for club : "+club["nom"])
+        except:
+            print("can't find info for club : " + value)l
+    return clubs
+
+print(getClubsInfo(linksClubs))
 # linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
 # print(linksComite)
 
