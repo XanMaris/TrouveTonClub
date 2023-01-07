@@ -75,7 +75,7 @@ def getClubsInfo(linksClubs):
             clubs.append(club)
             print("add info for club : "+club["nom"])
         except:
-            print("can't find info for club : " + value)l
+            print("can't find info for club : " + value)
     return clubs
 
 print(getClubsInfo(linksClubs))
