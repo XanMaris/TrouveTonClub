@@ -6,6 +6,7 @@ from time import sleep
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import json
+import requests
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
@@ -32,9 +33,9 @@ def getComiteLinks():
 
     return linksComite
 
-linksComite = getComiteLinks()
+#linksComite = getComiteLinks()
 # print(linksComite)
-# linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
+linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
 def getLinksClubs(linksComite):
     global driver
     linksClubs = {}
@@ -52,33 +53,87 @@ def getLinksClubs(linksComite):
         except:
             print("can't find links for comite : " + value)
     return linksClubs
-linksClubs = getLinksClubs(linksComite)
-#linksClub={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
-def getClubsInfo(linksClubs):
+#linksClubs = getLinksClubs(linksComite)
+linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
+    
+def getClubInfo(clubLink):
     global driver
-    clubs = []
-    for value in linksClubs.values():
-        try:
-            club={}
-            driver.get(value)
-            organisme  = driver.find_element(By.ID,'idTdOrganisme')
-            # for element in organisme.text.split():
-            #     if(element)
-            # while()
-            organismeParse = organisme.text.split("\n")
-            club["nom"]=organismeParse[0]
-            club["adresse"]=organismeParse[1]
-            club["ville"]=organismeParse[2]
-            club["telephone"]=organismeParse[3]
-            club["email"]=organismeParse[4]
-            club["site"]=organismeParse[5]
-            clubs.append(club)
-            print("add info for club : "+club["nom"])
-        except:
-            print("can't find info for club : " + value)
-    return clubs
+    club={}
 
-print(getClubsInfo(linksClubs))
+    try:
+        driver.get(clubLink)
+        organisme  = driver.find_element(By.ID,'idTdOrganisme')
+        # Organisme info
+        organismeParse = organisme.text.split("\n")
+        club["nom"]=organismeParse[0]
+        club["adresse"]=organismeParse[1]
+        club["ville"]=organismeParse[2]
+        club["telephone"]=organismeParse[3]
+        club["email"]=organismeParse[4]
+        club["site"]=organismeParse[5]
+        
+        # Get salle info
+        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeSalle")))
+        salleElement=driver.find_elements(By.CLASS_NAME,'p140')
+        infoSalle=[]
+        for element in salleElement:
+            infoSalle.append(element.text)
+        club["salle"]=infoSalle
+
+        # Get direction info
+        driver.switch_to.default_content()
+        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeDirection")))
+        directionInfo = driver.find_elements(By.CLASS_NAME,'p120')
+        directionNames = driver.find_elements(By.CLASS_NAME,'bolder')
+        direction = {}
+        for element in directionNames:
+            direction[str(element.text)]=[]
+        key=list(direction.keys())[0]
+        for element in directionInfo:
+            if('vertical-align' not in element.get_attribute('style')): # maybe use child number instead
+                if('bolder' in element.get_attribute('class')):
+                    key = element.text
+                else:         
+                    direction[key].append(element.text)    
+        club["direction"]=direction
+        driver.switch_to.default_content()
+        
+        # Get equipe info
+        WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeEngagement")))
+        # print(driver.page_source)
+        equipeElement=driver.find_elements(By.TAG_NAME,'a')
+        equipes=[]
+        for element in equipeElement:
+            equipes.append(element.text)
+        club["equipes"]=equipes
+           
+    except Exception as e:
+        print("can't find info for club : " + clubLink)
+        print(repr(e))
+    
+    return club
+
+
+def insertClubs(linksClubs):
+    for value in linksClubs.values():
+        club = getClubInfo(value)
+       
+        dump = json.dumps(club, separators=(',', ':'))
+
+        print(dump)
+        '''
+        try:
+            r = requests.post("http://localhost:3001/api/clubs", data=json.dumps(club), headers={'Content-Type': 'application/json'})
+            print(r)
+            if(r.status_code != 204):
+                print("error with API : " + r.text)
+            else:
+                print("add info for club : "+club["nom"])
+        except(requests.exceptions.RequestException) as e:
+            print("error with API : ")
+            print(e)
+        '''
+insertClubs(linksClubs)
 # linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
 # print(linksComite)
 
