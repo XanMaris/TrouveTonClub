@@ -40,7 +40,7 @@ def getComiteLinks():
 
     return linksComite
 
-linksComite = getComiteLinks()
+#linksComite = getComiteLinks()
 # print(linksComite)
 #linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
 def getLinksClubs(linksComite):
@@ -60,8 +60,8 @@ def getLinksClubs(linksComite):
         except:
             print("can't find links for comite : " + value)
     return linksClubs
-linksClubs = getLinksClubs(linksComite)
-#linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
+#linksClubs = getLinksClubs(linksComite)
+linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
     
 def getClubInfo(clubLink):
     global driver
@@ -78,6 +78,22 @@ def getClubInfo(clubLink):
         club["telephone"]=organismeParse[3]
         club["email"]=organismeParse[4]
         club["site"]=organismeParse[5]
+        
+        parsedAdresse=""
+        for element in club["adresse"] : #+ " "+club["ville"]
+            if(element == " "):
+                parsedAdresse+="+"
+            else:
+                parsedAdresse+=element
+       
+        req = "https://api-adresse.data.gouv.fr/search/?q={}&limit=15".format(parsedAdresse)
+        r = requests.get(req)
+
+        r=json.loads(r.content)
+
+        r = r.get("features")[0].get("geometry").get("coordinates")
+
+        club["location"]={"lat":r[1],"lon":r[0]}
         
         # Get salle info
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeSalle")))
@@ -127,16 +143,16 @@ def insertClubs(linksClubs):
         dump = json.dumps(club)
         print(dump)
         
-        try:
-            r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
-            print(r)
-            if(r.status_code != 204):
-                print("error with API : " + r.text)
-            else:
-                print("add info for club : "+club["nom"])
-        except(requests.exceptions.RequestException) as e:
-            print("error with API : ")
-            print(e)
+        # try:
+        #     r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
+        #     print(r)
+        #     if(r.status_code != 204):
+        #         print("error with API : " + r.text)
+        #     else:
+        #         print("add info for club : "+club["nom"])
+        # except(requests.exceptions.RequestException) as e:
+        #     print("error with API : ")
+        #     print(e)
         
 insertClubs(linksClubs)
 # linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
