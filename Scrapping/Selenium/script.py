@@ -40,9 +40,9 @@ def getComiteLinks():
 
     return linksComite
 
-#linksComite = getComiteLinks()
+linksComite = getComiteLinks()
 # print(linksComite)
-linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
+#linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
 def getLinksClubs(linksComite):
     global driver
     linksClubs = {}
@@ -60,8 +60,8 @@ def getLinksClubs(linksComite):
         except:
             print("can't find links for comite : " + value)
     return linksClubs
-#linksClubs = getLinksClubs(linksComite)
-linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
+linksClubs = getLinksClubs(linksComite)
+#linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
     
 def getClubInfo(clubLink):
     global driver
@@ -127,16 +127,16 @@ def insertClubs(linksClubs):
         dump = json.dumps(club)
         print(dump)
         
-        # try:
-        #     r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
-        #     print(r)
-        #     if(r.status_code != 204):
-        #         print("error with API : " + r.text)
-        #     else:
-        #         print("add info for club : "+club["nom"])
-        # except(requests.exceptions.RequestException) as e:
-        #     print("error with API : ")
-        #     print(e)
+        try:
+            r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
+            print(r)
+            if(r.status_code != 204):
+                print("error with API : " + r.text)
+            else:
+                print("add info for club : "+club["nom"])
+        except(requests.exceptions.RequestException) as e:
+            print("error with API : ")
+            print(e)
         
 insertClubs(linksClubs)
 # linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
