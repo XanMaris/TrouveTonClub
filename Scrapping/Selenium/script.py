@@ -13,8 +13,15 @@ options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.headless = True
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
-driver.set_page_load_timeout(600)
+driver.set_page_load_timeout(800)
 
+def removeWhiteSpaces(text):
+    whiteSpace = True
+    i=-1
+    while whiteSpace:
+        whiteSpace=text[i+1]== " "
+        i+=1
+    return text[i:]
 
 def getComiteLinks():
     global driver
@@ -77,7 +84,7 @@ def getClubInfo(clubLink):
         salleElement=driver.find_elements(By.CLASS_NAME,'p140')
         infoSalle=[]
         for element in salleElement:
-            infoSalle.append(element.text)
+            infoSalle.append(removeWhiteSpaces(element.text))
         club["salle"]=infoSalle
 
         # Get direction info
@@ -94,7 +101,7 @@ def getClubInfo(clubLink):
                 if('bolder' in element.get_attribute('class')):
                     key = element.text
                 else:         
-                    direction[key].append(element.text)    
+                    direction[key].append(removeWhiteSpaces(element.text))    
         club["direction"]=direction
         driver.switch_to.default_content()
         
@@ -104,35 +111,33 @@ def getClubInfo(clubLink):
         equipeElement=driver.find_elements(By.TAG_NAME,'a')
         equipes=[]
         for element in equipeElement:
-            equipes.append(element.text)
+            equipes.append(removeWhiteSpaces(element.text))
         club["equipes"]=equipes
            
     except Exception as e:
         print("can't find info for club : " + clubLink)
         print(repr(e))
-    
+        raise(e)
     return club
 
 
 def insertClubs(linksClubs):
     for value in linksClubs.values():
         club = getClubInfo(value)
-       
-        dump = json.dumps(club, separators=(',', ':'))
-
+        dump = json.dumps(club)
         print(dump)
-        '''
-        try:
-            r = requests.post("http://localhost:3001/api/clubs", data=json.dumps(club), headers={'Content-Type': 'application/json'})
-            print(r)
-            if(r.status_code != 204):
-                print("error with API : " + r.text)
-            else:
-                print("add info for club : "+club["nom"])
-        except(requests.exceptions.RequestException) as e:
-            print("error with API : ")
-            print(e)
-        '''
+        
+        # try:
+        #     r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
+        #     print(r)
+        #     if(r.status_code != 204):
+        #         print("error with API : " + r.text)
+        #     else:
+        #         print("add info for club : "+club["nom"])
+        # except(requests.exceptions.RequestException) as e:
+        #     print("error with API : ")
+        #     print(e)
+        
 insertClubs(linksClubs)
 # linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
 # print(linksComite)
