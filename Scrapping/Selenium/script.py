@@ -18,10 +18,13 @@ driver.set_page_load_timeout(800)
 def removeWhiteSpaces(text):
     whiteSpace = True
     i=-1
-    while whiteSpace:
-        whiteSpace=text[i+1]== " "
-        i+=1
-    return text[i:]
+    try:
+        while whiteSpace and i+1<len(text):
+            whiteSpace=text[i+1]== " "
+            i+=1
+        return text[i:]
+    except:
+        return text
 
 def getComiteLinks():
     global driver
@@ -39,14 +42,23 @@ def getComiteLinks():
             print("add comite : " + text)
 
     return linksComite
+'''
+linksComite = getComiteLinks()
+with open('linksComite.txt', 'w') as f:
+    json.dump(linksComite, f)
 
-#linksComite = getComiteLinks()
+iComites = 0
+lenComite = len(linksComite)
+'''
 # print(linksComite)
 #linksComite = {'0001': 'https://resultats.ffbb.com/organisation/7eb.html'}
 def getLinksClubs(linksComite):
     global driver
+    global iComites
+    global lenComite
     linksClubs = {}
     for value in linksComite.values():
+        print(iComites,"/",lenComite)
         driver.get(value)
         try:
             WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeOrganismeFils")))
@@ -59,12 +71,23 @@ def getLinksClubs(linksComite):
                     print("add club : " + text)
         except:
             print("can't find links for comite : " + value)
+        finally:
+            iComites+=1
     return linksClubs
-#linksClubs = getLinksClubs(linksComite)
-linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
-    
+# linksClubs = getLinksClubs(linksComite)
+
+# with open('linksClubs.txt', 'w') as f:
+#     json.dump(linksClubs, f)
+
+with open('linksClubs.txt', 'r') as f:
+    linksClubs = json.load(f)
+#linksClubs={'ARA0001001': 'https://resultats.ffbb.com/organisation/2a84.html'}
+iClubs = 0 
+lenClubs = len(linksClubs)
+
 def getClubInfo(clubLink):
     global driver
+
     club={}
 
     try:
@@ -86,14 +109,15 @@ def getClubInfo(clubLink):
             else:
                 parsedAdresse+=element
        
-        req = "https://api-adresse.data.gouv.fr/search/?q={}&limit=15".format(parsedAdresse)
+        req = "https://api-adresse.data.gouv.fr/search/?q={}&limit=1".format(parsedAdresse)
+
         r = requests.get(req)
 
         r=json.loads(r.content)
 
         r = r.get("features")[0].get("geometry").get("coordinates")
 
-        club["location"]={"lat":r[1],"lon":r[0]}
+        club["location"]={"type":"Point","coordinates":{"lat":r[1],"lon":r[0]}}
         
         # Get salle info
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeSalle")))
@@ -123,7 +147,6 @@ def getClubInfo(clubLink):
         
         # Get equipe info
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeEngagement")))
-        # print(driver.page_source)
         equipeElement=driver.find_elements(By.TAG_NAME,'a')
         equipes=[]
         for element in equipeElement:
@@ -138,41 +161,31 @@ def getClubInfo(clubLink):
 
 
 def insertClubs(linksClubs):
+    global iClubs
+    global lenClubs
     for value in linksClubs.values():
-        club = getClubInfo(value)
-        dump = json.dumps(club)
-        print(dump)
-        
-        # try:
-        #     r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
-        #     print(r)
-        #     if(r.status_code != 204):
-        #         print("error with API : " + r.text)
-        #     else:
-        #         print("add info for club : "+club["nom"])
-        # except(requests.exceptions.RequestException) as e:
-        #     print("error with API : ")
-        #     print(e)
+        print(iClubs,"/",lenClubs)
+        try:
+            club = getClubInfo(value)
+            dump = json.dumps(club)
+            print(dump)
+            
+            try:
+                r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
+                if(r.status_code != 204):
+                    print("error with API : " + r.text)
+                else:
+                    print("add info for club : "+club["nom"])
+            except(requests.exceptions.RequestException) as e:
+                print("error with API : ")
+                print(e)
+            finally:
+                iClubs+=1
+        except Exception as e:
+            print(e)
         
 insertClubs(linksClubs)
-# linksComite["ILES-SOUS-LE-VENT DE BASKET-BALL"] = "https://resultats.ffbb.com/organisation/8d9095695.html"
-# print(linksComite)
 
+print("DONE")
 
-# for comite in linksComite:
-#     driver.get(linksComite[comite])
-#     sleep(2)
-#     l = driver.find_elements(By.CLASS_NAME,'liste')
-#     print(l)
-#     for element in l:
-#         print(element.text)
-#         print(element.get_attribute("href"))
-
-
-    # elem = l.find_elements(By.XPATH, "//text[contains(text(), 'ARA')]")
-    # for element in elem:
-        # print(element.text)
-    # print(elem)
-
-print("done")
 driver.close()
