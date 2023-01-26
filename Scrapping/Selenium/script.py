@@ -99,8 +99,10 @@ def getClubInfo(clubLink):
         club["adresse"]=organismeParse[1]
         club["ville"]=organismeParse[2]
         club["telephone"]=organismeParse[3]
-        club["email"]=organismeParse[4]
-        club["site"]=organismeParse[5]
+        club["email"]=organismeParse[4][(organismeParse[4].find(":")+2):]
+        club["site"]=organismeParse[5][organismeParse[5].find("http"):]
+        print(club["site"])
+        print(club["email"])
         
         parsedAdresse=""
         for element in club["adresse"] : #+ " "+club["ville"]
@@ -116,8 +118,9 @@ def getClubInfo(clubLink):
         r=json.loads(r.content)
 
         r = r.get("features")[0].get("geometry").get("coordinates")
-
-        club["location"]={"type":"Point","coordinates":{"lat":r[1],"lon":r[0]}}
+        lat=r[1]
+        lon=r[0]
+        club["location"]={"type":"Point","coordinates":[lon, lat]}
         
         # Get salle info
         WebDriverWait(driver, 30).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"idIframeSalle")))
@@ -167,8 +170,8 @@ def insertClubs(linksClubs):
         print(iClubs,"/",lenClubs)
         try:
             club = getClubInfo(value)
+            print("save info for clubs : ", value)
             dump = json.dumps(club)
-            print(dump)
             
             try:
                 r = requests.post("http://localhost:3001/api/clubs", data=dump, headers={'Content-Type': 'application/json'})
